@@ -209,8 +209,14 @@ struct cfm_lbm {
 #define GET_MD_LEVEL(s)		(((s)->octet1.md_level >> 5) & 0x07)
 
 /* positions of headers in Ethernet frame */
+#if 0
 #define IS_TAGGED(s)		(*(s + ETHER_ADDR_LEN * 2) \
 					== htons(ETYPE_8021Q))
+#endif
+/* The above macro is worng, the following will do proper justifcation to decide header packet is tagged or not */
+#define IS_TAGGED(s)       ( ((*(s + ETHER_ADDR_LEN * 2) << 8) + (*((s + (ETHER_ADDR_LEN * 2) + 1)))) \
+                                         == htons(ETYPE_8021Q))
+
 #define CFMHDR(s)		(struct cfmhdr *) \
 				(IS_TAGGED(s) ? \
 					((s) + ETHER_HDR_LEN + \
